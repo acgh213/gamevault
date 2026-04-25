@@ -1133,6 +1133,406 @@ img {
     font-size: 0.85rem;
 }
 
+/* ─── Lists & Shelves ──────────────────────────────────────────────────────── */
+.lists-page {
+    min-height: 60vh;
+}
+
+.lists-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1.25rem;
+}
+
+.list-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.list-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.list-card-name {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.list-card-count {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    background-color: var(--bg-secondary);
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+}
+
+.list-card-description {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.list-card-games {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    align-items: center;
+}
+
+.list-game-thumb {
+    width: 56px;
+    height: 76px;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    transition: transform var(--transition);
+}
+
+.list-game-thumb:hover {
+    transform: scale(1.1);
+}
+
+.list-game-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.list-game-thumb-placeholder {
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.list-game-more {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    padding: 0.25rem 0.5rem;
+    background-color: var(--bg-secondary);
+    border-radius: var(--radius-sm);
+}
+
+.list-empty {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+/* ─── Modal ─────────────────────────────────────────────────────────────────── */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    padding: 1rem;
+}
+
+.modal {
+    width: 100%;
+    max-width: 440px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.modal-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.25rem;
+    line-height: 1;
+}
+
+.modal-close:hover {
+    color: var(--text-primary);
+}
+
+.modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+}
+
+/* ─── Add to List Dropdown ─────────────────────────────────────────────────── */
+.add-to-list-section {
+    margin-top: 1rem;
+    position: relative;
+}
+
+.add-to-list-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 50;
+    min-width: 240px;
+    margin-top: 0.25rem;
+    padding: 0;
+    overflow: hidden;
+}
+
+.dropdown-header {
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border-color);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.dropdown-items {
+    max-height: 280px;
+    overflow-y: auto;
+}
+
+.dropdown-item {
+    padding: 0.65rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: background-color var(--transition);
+}
+
+.dropdown-item:hover {
+    background-color: var(--bg-card-hover);
+}
+
+.dropdown-item.loading {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.dropdown-item.added {
+    color: var(--accent-green);
+    pointer-events: none;
+}
+
+.dropdown-item-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.dropdown-item-count {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    background-color: var(--bg-secondary);
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
+}
+
+.dropdown-empty {
+    padding: 1rem;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+/* ─── Empty State ──────────────────────────────────────────────────────────── */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.empty-state-icon {
+    font-size: 3rem;
+}
+
+.empty-state-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.empty-state-text {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    max-width: 400px;
+}
+
+/* ─── Toast Notifications ──────────────────────────────────────────────────── */
+.toast {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+    font-weight: 500;
+    z-index: 300;
+    opacity: 0;
+    transform: translateY(1rem);
+    transition: all 0.3s ease;
+    max-width: 350px;
+    pointer-events: none;
+}
+
+.toast-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.toast-success {
+    background-color: var(--accent-green);
+    color: #0a0a0f;
+}
+
+.toast-error {
+    background-color: var(--accent-rose);
+    color: #0a0a0f;
+}
+
+.toast-info {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+/* ─── Form Elements ────────────────────────────────────────────────────────── */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.form-label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.form-input {
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 0.65rem 0.85rem;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    font-family: inherit;
+    transition: all var(--transition);
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: var(--accent-gold);
+    box-shadow: 0 0 0 3px rgba(212, 165, 116, 0.15);
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 60px;
+}
+
+.optional {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    font-weight: 400;
+}
+
+.review-feedback {
+    font-size: 0.85rem;
+    padding: 0.5rem;
+    border-radius: var(--radius-sm);
+    display: none;
+}
+
+.review-feedback.success {
+    display: block;
+    background-color: rgba(124, 184, 124, 0.15);
+    color: var(--accent-green);
+}
+
+.review-feedback.error {
+    display: block;
+    background-color: rgba(196, 139, 139, 0.15);
+    color: var(--accent-rose);
+}
+
+/* ─── Button Styles ────────────────────────────────────────────────────────── */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition);
+    font-family: inherit;
+}
+
+.btn-primary {
+    background-color: var(--accent-gold);
+    color: #0a0a0f;
+}
+
+.btn-primary:hover {
+    background-color: var(--accent-lavender);
+    color: #0a0a0f;
+}
+
+.btn-secondary {
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+}
+
+.btn-secondary:hover {
+    border-color: var(--accent-gold);
+    color: var(--accent-gold);
+}
+
+/* ─── Responsive (Lists) ───────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .lists-container {
+        grid-template-columns: 1fr;
+    }
+
+    .add-to-list-dropdown {
+        position: static;
+        width: 100%;
+    }
+}
+
 /* ─── Responsive ───────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
     .hero-title {
