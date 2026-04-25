@@ -12,6 +12,8 @@ from flask import (
     url_for,
 )
 
+import json
+
 from auth import authenticate_user, login_required, register_user
 from igdb import IGDBClient
 from models import Game, GameList, Review, User, db
@@ -182,8 +184,32 @@ def game_detail(igdb_id):
             .all()
         )
 
+    # Build user_lists_json for the add-to-list dropdown
+    user_lists_json = "[]"
+    if "user_id" in session:
+        from models import GameList as GL
+
+        user_lists = (
+            GL.query.filter_by(user_id=session["user_id"]).all()
+        )
+        user_lists_json = json.dumps(
+            [
+                {
+                    "id": gl.id,
+                    "name": gl.name,
+                    "game_ids": [g.id for g in gl.games],
+                }
+                for gl in user_lists
+            ]
+        )
+
     return render_template(
-        "game.html", game=game_data, reviews=reviews, error=error
+        "game.html",
+        game=game_data,
+        db_game=db_game,
+        reviews=reviews,
+        error=error,
+        user_lists_json=user_lists_json,
     )
 
 
