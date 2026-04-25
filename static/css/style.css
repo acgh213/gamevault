@@ -61,6 +61,12 @@ a:hover {
     color: var(--accent-lavender);
 }
 
+a:focus-visible {
+    outline: 2px solid var(--accent-gold);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+}
+
 img {
     max-width: 100%;
     height: auto;
@@ -735,6 +741,27 @@ img {
 .btn:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+}
+
+/* Touch-friendly tap targets */
+.btn,
+.nav-link,
+.dropdown-item,
+.autocomplete-item,
+.modal-close,
+.list-game-thumb {
+    min-height: 44px;
+    min-width: 44px;
+}
+
+/* Keyboard focus visibility */
+button:focus-visible,
+.btn:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+    outline: 2px solid var(--accent-gold);
+    outline-offset: 2px;
 }
 
 /* ─── Auth Pages ───────────────────────────────────────────────────────────── */
@@ -1521,6 +1548,69 @@ img {
     color: var(--accent-gold);
 }
 
+/* ─── Search Loading State ──────────────────────────────────────────────────── */
+.search-loading {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-muted);
+}
+
+.search-loading::after {
+    content: '';
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    margin-left: 0.5rem;
+    border: 2px solid var(--border-color);
+    border-top-color: var(--accent-gold);
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    vertical-align: middle;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.search-loading-dots {
+    display: inline-flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.search-loading-dots span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--text-muted);
+    animation: dot-bounce 1.4s ease-in-out infinite both;
+}
+
+.search-loading-dots span:nth-child(1) { animation-delay: -0.32s; }
+.search-loading-dots span:nth-child(2) { animation-delay: -0.16s; }
+.search-loading-dots span:nth-child(3) { animation-delay: 0s; }
+
+@keyframes dot-bounce {
+    0%, 80%, 100% { transform: scale(0); }
+    40% { transform: scale(1); }
+}
+
+/* ─── Search Results Loading ────────────────────────────────────────────────── */
+.search-results-loading .game-card {
+    pointer-events: none;
+}
+
+.search-results-loading .game-card-cover-wrapper {
+    background: linear-gradient(90deg, var(--bg-card) 25%, var(--bg-card-hover) 50%, var(--bg-card) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
 /* ─── Responsive (Lists) ───────────────────────────────────────────────────── */
 @media (max-width: 768px) {
     .lists-container {
@@ -1601,8 +1691,21 @@ img {
         grid-template-columns: 1fr;
     }
 
+    .review-card-header {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .review-card-body {
+        font-size: 0.85rem;
+    }
+
     .games-grid {
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+
+    .game-card-title {
+        font-size: 0.85rem;
     }
 
     .profile-header {
@@ -1611,7 +1714,14 @@ img {
     }
 
     .profile-stats {
-        justify-content: center;
+        flex-direction: column;
+        gap: 0.75rem;
+        align-items: center;
+    }
+
+    .stat-item {
+        width: 100%;
+        max-width: 200px;
     }
 
     .search-form {
@@ -1625,6 +1735,40 @@ img {
     .section-header {
         flex-direction: column;
         gap: 0.75rem;
+    }
+
+    .main-content {
+        padding: 1.5rem 1rem;
+    }
+
+    .section-title {
+        font-size: 1.25rem;
+    }
+
+    .game-detail-page {
+        gap: 1.5rem;
+    }
+
+    .game-summary p {
+        font-size: 0.9rem;
+    }
+
+    .game-meta {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .meta-label {
+        min-width: auto;
+    }
+
+    .card {
+        padding: 1rem;
+    }
+
+    .modal {
+        max-width: 100%;
+        margin: 0 0.5rem;
     }
 }
 
@@ -1644,5 +1788,69 @@ img {
 
     .hero-subtitle {
         font-size: 1rem;
+    }
+
+    .hero {
+        padding: 2rem 1rem;
+    }
+
+    .game-title {
+        font-size: 1.35rem;
+    }
+
+    .profile-username {
+        font-size: 1.35rem;
+    }
+
+    .stat-value {
+        font-size: 1.25rem;
+    }
+
+    .footer-container {
+        font-size: 0.8rem;
+    }
+
+    .auth-title {
+        font-size: 1.4rem;
+    }
+
+    .search-title {
+        font-size: 1.4rem;
+    }
+
+    .section-title {
+        font-size: 1.1rem;
+    }
+
+    .game-card-title {
+        font-size: 0.8rem;
+    }
+
+    .reviews-grid {
+        gap: 0.75rem;
+    }
+
+    .review-card {
+        padding: 0.875rem;
+    }
+
+    .empty-state {
+        padding: 2rem 1rem;
+    }
+
+    .empty-state-icon {
+        font-size: 2.5rem;
+    }
+
+    .empty-state-title {
+        font-size: 1.15rem;
+    }
+
+    .toast {
+        left: 1rem;
+        right: 1rem;
+        bottom: 1rem;
+        max-width: none;
+        text-align: center;
     }
 }
