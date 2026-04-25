@@ -876,11 +876,71 @@ img {
     color: var(--accent-gold);
 }
 
+.stat-num {
+    /* Alias for stat-value — large gold number */
+}
+
 .stat-label {
     font-size: 0.8rem;
     color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.05em;
+}
+
+/* ─── Profile Lists ────────────────────────────────────────────────────────── */
+.lists-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+}
+
+.list-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.list-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.list-icon {
+    font-size: 1.25rem;
+    color: var(--accent-gold);
+}
+
+.list-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.list-description {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.list-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border-color);
+    font-size: 0.85rem;
+}
+
+.list-game-count {
+    color: var(--accent-lavender);
+    font-weight: 500;
+}
+
+.list-visibility {
+    color: var(--text-muted);
+    font-size: 0.8rem;
 }
 
 /* ─── Search Page ──────────────────────────────────────────────────────────── */
