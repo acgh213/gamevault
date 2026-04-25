@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% block title %}GameVault — {{ game.name if game else "Game Not Found" }}{% endblock %}
+{% block content %}
+<div class="game-detail-page">
+    {% if error %}
+    <div class="alert alert-error">
+        <span class="alert-icon">&#9888;</span>
+        <span class="alert-text">{{ error }}</span>
+    </div>
+    <a href="{{ url_for('routes.search') }}" class="btn btn-primary">Back to Search</a>
+    {% elif game %}
+    <div class="game-header">
+        {% if game.cover_url %}
+        <div class="game-cover-wrapper">
+            <img src="{{ game.cover_url }}" alt="{{ game.name }}" class="game-cover" loading="lazy">
+        </div>
+        {% endif %}
+        <div class="game-info">
+            <h1 class="game-title">{{ game.name }}</h1>
+
+            {% if game.release_date %}
+            <div class="game-meta">
+                <span class="meta-label">Released:</span>
+                <span class="meta-value">{{ game.release_date }}</span>
+            </div>
+            {% endif %}
+
+            {% if game.genres %}
+            <div class="game-meta">
+                <span class="meta-label">Genres:</span>
+                <div class="tag-list">
+                    {% for genre in game.genres %}
+                    <span class="tag">{{ genre }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if game.platforms %}
+            <div class="game-meta">
+                <span class="meta-label">Platforms:</span>
+                <div class="tag-list">
+                    {% for platform in game.platforms %}
+                    <span class="tag tag-platform">{{ platform }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if game.summary %}
+            <div class="game-summary">
+                <h3>Summary</h3>
+                <p>{{ game.summary }}</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Reviews Section -->
+    <section class="game-reviews-section">
+        <div class="section-header">
+            <h2 class="section-title">Reviews</h2>
+        </div>
+
+        {% if session.get('user_id') %}
+        <div class="review-form-card card">
+            <h3 class="review-form-title">Write a Review</h3>
+            <form id="reviewForm" class="review-form" data-igdb-id="{{ game.id }}">
+                <div class="star-rating">
+                    <label class="form-label">Your Rating</label>
+                    <div class="star-input" id="starInput">
+                        {% for i in range(5, 0, -1) %}
+                        <input type="radio" name="rating" id="star{{ i }}" value="{{ i }}" {% if i==5 %}checked{% endif %}>
+                        <label for="star{{ i }}" class="star-label" title="{{ i }} star{% if i > 1 %}s{% endif %}">&#9733;</label>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="reviewBody" class="form-label">Your Review <span class="optional">(optional)</span></label>
+                    <textarea id="reviewBody" name="body" class="form-input form-textarea" placeholder="What did you think of this game?" rows="4"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit Review</button>
+                <div id="reviewFeedback" class="review-feedback"></div>
+            </form>
+        </div>
+        {% else %}
+        <div class="login-prompt card">
+            <p><a href="{{ url_for('routes.login') }}" class="auth-link">Log in</a> to write a review.</p>
+        </div>
+        {% endif %}
+
+        <div class="reviews-list" id="reviewsList">
+            {% if reviews %}
+            {% for review in reviews %}
+            <div class="review-card card">
+                <div class="review-card-header">
+                    <a href="{{ url_for('routes.profile', username=review.author.username) }}" class="review-author">{{ review.author.username }}</a>
+                    <span class="review-date">{{ review.created_at.strftime('%b %d, %Y') if review.created_at else '' }}</span>
+                </div>
+                <div class="review-card-rating">
+                    <span class="stars">
+                        {% for i in range(5) %}
+                        <span class="star {% if i < review.rating %}filled{% endif %}">&#9733;</span>
+                        {% endfor %}
+                    </span>
+                    <span class="rating-value">{{ review.rating }}/5</span>
+                </div>
+                {% if review.body %}
+                <p class="review-card-body">{{ review.body }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="empty-state">
+                <p>No reviews yet for this game.</p>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+    {% endif %}
+</div>
+
+{% if session.get('user_id') %}
+<script>
+document.getElementById('reviewForm')?.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const feedback = document.getElementById('reviewFeedback');
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const rating = this.querySelector('input[name="rating"]:checked')?.value;
+    const body = document.getElementById('reviewBody')?.value || '';
+    const igdbId = this.dataset.igdbId;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting...';
+    feedback.className = 'review-feedback';
+
+    try {
+        const response = await fetch('{{ url_for("routes.api_create_review") }}', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ igdb_id: parseInt(igdbId), rating: parseInt(rating), body: body }),
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+            feedback.className = 'review-feedback success';
+            feedback.textContent = 'Review submitted! Refreshing...';
+            setTimeout(() => location.reload(), 1000);
+        } else {
+            feedback.className = 'review-feedback error';
+            feedback.textContent = data.error || 'Failed to submit review.';
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit Review';
+        }
+    } catch (err) {
+        feedback.className = 'review-feedback error';
+        feedback.textContent = 'Network error. Please try again.';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Review';
+    }
+});
+</script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}GameVault — {{ profile_user.username }}{% endblock %}
+{% block content %}
+<div class="profile-page">
+    <div class="profile-header card">
+        <div class="profile-avatar">
+            <span class="avatar-letter">{{ profile_user.username[:1]|upper }}</span>
+        </div>
+        <div class="profile-info">
+            <h1 class="profile-username">{{ profile_user.username }}</h1>
+            <p class="profile-joined">Joined {{ profile_user.created_at.strftime('%B %Y') if profile_user.created_at else 'N/A' }}</p>
+        </div>
+        <div class="profile-stats">
+            <div class="stat-item">
+                <span class="stat-value">{{ total_reviews }}</span>
+                <span class="stat-label">Reviews</span>
+            </div>
+            {% if avg_rating %}
+            <div class="stat-item">
+                <span class="stat-value">{{ avg_rating }}</span>
+                <span class="stat-label">Avg Rating</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <section class="profile-reviews">
+        <div class="section-header">
+            <h2 class="section-title">Recent Reviews</h2>
+        </div>
+
+        {% if reviews %}
+        <div class="reviews-grid">
+            {% for review in reviews %}
+            <div class="review-card card">
+                <div class="review-card-header">
+                    <span class="review-date">{{ review.created_at.strftime('%b %d, %Y') if review.created_at else '' }}</span>
+                </div>
+                <div class="review-card-game">
+                    {% if review.game and review.game.cover_url %}
+                    <img src="{{ review.game.cover_url }}" alt="{{ review.game.name }}" class="review-card-cover" loading="lazy">
+                    {% endif %}
+                    <a href="{{ url_for('routes.game_detail', igdb_id=review.game.igdb_id) if review.game else '#' }}" class="review-card-name">{{ review.game.name if review.game else 'Unknown Game' }}</a>
+                </div>
+                <div class="review-card-rating">
+                    <span class="stars">
+                        {% for i in range(5) %}
+                        <span class="star {% if i < review.rating %}filled{% endif %}">&#9733;</span>
+                        {% endfor %}
+                    </span>
+                    <span class="rating-value">{{ review.rating }}/5</span>
+                </div>
+                {% if review.body %}
+                <p class="review-card-body">{{ review.body[:200] }}{% if review.body|length > 200 %}...{% endif %}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>No reviews yet.</p>
+        </div>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

@@ -65,12 +65,9 @@ class TestAuthLoginRequired:
         """Test that accessing a protected route redirects to login."""
         from auth import login_required
 
-        # Register a dummy login route so url_for("login") resolves
-        @app.route("/login")
-        def login():
-            return "Login page"
+        # The routes blueprint provides "routes.login" at /login,
+        # so url_for("routes.login") resolves automatically.
 
-        # Register a protected route for testing
         @app.route("/protected")
         @login_required
         def protected_view():

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}GameVault{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('routes.home') }}" class="nav-brand">
+                <span class="brand-icon">&#9733;</span>
+                <span class="brand-text">GameVault</span>
+            </a>
+            <div class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <ul class="nav-links" id="navLinks">
+                <li>
+                    <a href="{{ url_for('routes.home') }}" class="nav-link">Home</a>
+                </li>
+                <li class="nav-search-item">
+                    <form action="{{ url_for('routes.search') }}" method="GET" class="nav-search-form">
+                        <input type="text" name="q" placeholder="Search games..." class="nav-search-input" aria-label="Search games">
+                        <button type="submit" class="nav-search-btn">Search</button>
+                    </form>
+                </li>
+                {% if session.get('user_id') %}
+                <li><a href="{{ url_for('routes.profile', username=session.get('username')) }}" class="nav-link">{{ session.get('username') }}</a></li>
+                <li><a href="{{ url_for('routes.logout') }}" class="nav-link nav-logout">Logout</a></li>
+                {% else %}
+                <li><a href="{{ url_for('routes.login') }}" class="nav-link">Login</a></li>
+                <li><a href="{{ url_for('routes.register') }}" class="nav-link nav-register">Sign Up</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <p>GameVault &mdash; Powered by <a href="https://igdb.com" target="_blank" rel="noopener">IGDB</a></p>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('navToggle')?.addEventListener('click', function() {
+            document.getElementById('navLinks')?.classList.toggle('active');
+            this.classList.toggle('active');
+        });
+    </script>
+</body>
+</html>

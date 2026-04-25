@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}GameVault — Search: {{ query or 'All Games' }}{% endblock %}
+{% block content %}
+<div class="search-page">
+    <div class="search-header">
+        <h1 class="search-title">Search Games</h1>
+        <form action="{{ url_for('routes.search') }}" method="GET" class="search-form">
+            <input type="text" name="q" value="{{ query }}" placeholder="Search games by name..." class="search-input" aria-label="Search games">
+            <button type="submit" class="btn btn-primary search-submit-btn">Search</button>
+        </form>
+    </div>
+
+    {% if query %}
+    <div class="search-results-header">
+        <h2 class="section-title">
+            {% if results %}
+            Found {{ results|length }} result{% if results|length != 1 %}s{% endif %} for "{{ query }}"
+            {% else %}
+            No results found for "{{ query }}"
+            {% endif %}
+        </h2>
+    </div>
+
+    {% if results %}
+    <div class="games-grid">
+        {% for game in results %}
+        <a href="{{ url_for('routes.game_detail', igdb_id=game.id) }}" class="game-card card">
+            {% if game.cover_url %}
+            <div class="game-card-cover-wrapper">
+                <img src="{{ game.cover_url }}" alt="{{ game.name }}" class="game-card-cover" loading="lazy">
+            </div>
+            {% else %}
+            <div class="game-card-cover-wrapper no-cover">
+                <span class="no-cover-icon">&#9733;</span>
+            </div>
+            {% endif %}
+            <div class="game-card-info">
+                <h3 class="game-card-title">{{ game.name }}</h3>
+                {% if game.release_date %}
+                <span class="game-card-year">{{ game.release_date[-4:] if game.release_date|length >= 4 else game.release_date }}</span>
+                {% endif %}
+                {% if game.genres %}
+                <div class="game-card-tags">
+                    {% for genre in game.genres[:2] %}
+                    <span class="tag">{{ genre }}</span>
+                    {% endfor %}
+                    {% if game.genres|length > 2 %}
+                    <span class="tag tag-more">+{{ game.genres|length - 2 }}</span>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">&#9733;</div>
+        <h3>Search for a game to get started</h3>
+        <p>Type a game name above to search the IGDB database.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

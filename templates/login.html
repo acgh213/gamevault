@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}GameVault — {{ "Sign Up" if is_register else "Login" }}{% endblock %}
+{% block content %}
+<div class="auth-page">
+    <div class="auth-card card">
+        <div class="auth-header">
+            <div class="auth-icon">&#9733;</div>
+            <h1 class="auth-title">{{ "Create Your Account" if is_register else "Welcome Back" }}</h1>
+            <p class="auth-subtitle">
+                {{ "Join GameVault and start reviewing games." if is_register else "Log in to continue your journey." }}
+            </p>
+        </div>
+
+        {% if error %}
+        <div class="alert alert-error">
+            <span class="alert-icon">&#9888;</span>
+            <span class="alert-text">{{ error }}</span>
+        </div>
+        {% endif %}
+
+        <form method="POST" class="auth-form">
+            {% if is_register %}
+            <div class="form-group">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" id="email" name="email" class="form-input" placeholder="your@email.com" required>
+            </div>
+            {% endif %}
+
+            <div class="form-group">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" id="username" name="username" class="form-input" placeholder="Your username" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" id="password" name="password" class="form-input" placeholder="Your password" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full">
+                {{ "Create Account" if is_register else "Log In" }}
+            </button>
+        </form>
+
+        <div class="auth-footer">
+            {% if is_register %}
+            <p>Already have an account? <a href="{{ url_for('routes.login') }}" class="auth-link">Log in</a></p>
+            {% else %}
+            <p>Don't have an account? <a href="{{ url_for('routes.register') }}" class="auth-link">Sign up</a></p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

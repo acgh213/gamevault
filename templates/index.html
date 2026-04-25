@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}GameVault — Discover & Review Games{% endblock %}
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <h1 class="hero-title">Discover Your Next <span class="accent-gold">Favorite Game</span></h1>
+        <p class="hero-subtitle">Search thousands of games, read reviews, and share your own ratings with the GameVault community.</p>
+        <div class="hero-search">
+            <form action="{{ url_for('routes.search') }}" method="GET" class="hero-search-form">
+                <input type="text" name="q" placeholder="Search games by name..." class="hero-search-input" aria-label="Search games">
+                <button type="submit" class="hero-search-btn">Search</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<section class="recent-section">
+    <div class="section-header">
+        <h2 class="section-title">Recent Reviews</h2>
+    </div>
+
+    {% if recent_reviews %}
+    <div class="reviews-grid">
+        {% for review in recent_reviews %}
+        <div class="review-card card">
+            <div class="review-card-header">
+                <a href="{{ url_for('routes.profile', username=review.author.username) }}" class="review-author">{{ review.author.username }}</a>
+                <span class="review-date">{{ review.created_at.strftime('%b %d, %Y') if review.created_at else '' }}</span>
+            </div>
+            <div class="review-card-game">
+                {% if review.game and review.game.cover_url %}
+                <img src="{{ review.game.cover_url }}" alt="{{ review.game.name }}" class="review-card-cover" loading="lazy">
+                {% endif %}
+                <a href="{{ url_for('routes.game_detail', igdb_id=review.game.igdb_id) if review.game else '#' }}" class="review-card-name">{{ review.game.name if review.game else 'Unknown Game' }}</a>
+            </div>
+            <div class="review-card-rating">
+                <span class="stars">
+                    {% for i in range(5) %}
+                    <span class="star {% if i < review.rating %}filled{% endif %}">&#9733;</span>
+                    {% endfor %}
+                </span>
+                <span class="rating-value">{{ review.rating }}/5</span>
+            </div>
+            {% if review.body %}
+            <p class="review-card-body">{{ review.body[:200] }}{% if review.body|length > 200 %}...{% endif %}</p>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">&#9733;</div>
+        <h3>No reviews yet</h3>
+        <p>Be the first to share your thoughts on a game!</p>
+        <a href="{{ url_for('routes.search') }}" class="btn btn-primary">Search Games</a>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}
