@@ -47,6 +47,20 @@
             </div>
             {% endif %}
 
+            {% if session.get('user_id') %}
+            <div class="add-to-list-section">
+                <button type="button" class="btn btn-secondary" id="addToListBtn">&#128193; Add to List</button>
+                <div class="add-to-list-dropdown card" id="addToListDropdown"
+                     data-igdb-id="{{ game.id }}"
+                     data-game-id="{% if db_game %}{{ db_game.id }}{% endif %}"
+                     data-lists='{{ user_lists_json | tojson | safe if user_lists_json else "[]" }}'
+                     style="display:none;">
+                    <div class="dropdown-header">Add to List</div>
+                    <div class="dropdown-items" id="listsContainer"></div>
+                </div>
+            </div>
+            {% endif %}
+
             {% if game.summary %}
             <div class="game-summary">
                 <h3>Summary</h3>
