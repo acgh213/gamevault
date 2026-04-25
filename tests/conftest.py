@@ -1,6 +1,9 @@
 import pytest
 from app import create_app, db as _db
 
+# Import models so they register with db.Model before create_all() runs
+import models  # noqa: F401
+
 @pytest.fixture
 def app():
     app = create_app('config.Config')
