@@ -14,7 +14,7 @@ from flask import (
 
 from auth import authenticate_user, login_required, register_user
 from igdb import IGDBClient
-from models import Game, Review, User, db
+from models import Game, GameList, Review, User, db
 
 routes = Blueprint("routes", __name__)
 
@@ -206,6 +206,12 @@ def profile(username):
     avg_rating = db.session.query(db.func.avg(Review.rating)).filter(
         Review.user_id == user.id
     ).scalar()
+    game_count = db.session.query(db.func.count(db.func.distinct(Review.game_id))).filter(
+        Review.user_id == user.id
+    ).scalar() or 0
+
+    # Get user's game lists
+    game_lists = user.game_lists.order_by(db.desc(GameList.created_at)).limit(5).all()
 
     return render_template(
         "profile.html",
@@ -213,6 +219,8 @@ def profile(username):
         reviews=reviews,
         total_reviews=total_reviews,
         avg_rating=round(avg_rating, 1) if avg_rating else None,
+        game_count=game_count,
+        game_lists=game_lists,
     )
 
 
@@ -343,3 +351,107 @@ def api_create_review():
         return jsonify({"error": str(e)}), 400
     except Exception:
         return jsonify({"error": "Could not create review"}), 500
+
+
+# ─── Lists / Shelves Routes ───────────────────────────────────────────────────
+
+
+@routes.route("/lists")
+def lists():
+    """Show user's lists (or redirect to login if not authenticated)."""
+    user = None
+    if "user_id" in session:
+        user = db.session.get(User, session["user_id"])
+    if user is None:
+        return redirect(url_for("routes.login"))
+
+    user_lists = (
+        GameList.query.filter_by(user_id=user.id)
+        .order_by(GameList.created_at.desc())
+        .all()
+    )
+    return render_template("lists.html", lists=user_lists, user=user)
+
+
+@routes.route("/api/lists", methods=["POST"])
+@login_required
+def api_create_list():
+    """Create a new list (login required)."""
+    data = request.get_json(silent=True) or {}
+    name = data.get("name", "").strip()
+    description = data.get("description", "").strip()
+
+    if not name:
+        return jsonify({"error": "List name is required"}), 400
+
+    game_list = GameList(
+        user_id=session["user_id"],
+        name=name,
+        description=description or None,
+    )
+    game_list.save()
+
+    return jsonify(
+        {
+            "id": game_list.id,
+            "name": game_list.name,
+            "description": game_list.description,
+            "created_at": game_list.created_at.isoformat()
+            if game_list.created_at
+            else None,
+        }
+    ), 201
+
+
+@routes.route("/api/lists/<int:list_id>/games", methods=["POST"])
+@login_required
+def api_add_game_to_list(list_id):
+    """Add a game to a list (login required, must own the list)."""
+    data = request.get_json(silent=True) or {}
+    game_id = data.get("game_id")
+
+    game_list = db.session.get(GameList, list_id)
+    if game_list is None:
+        return jsonify({"error": "List not found"}), 404
+
+    if game_list.user_id != session["user_id"]:
+        return jsonify({"error": "You do not own this list"}), 403
+
+    if not game_id:
+        return jsonify({"error": "game_id is required"}), 400
+
+    game = db.session.get(Game, game_id)
+    if game is None:
+        return jsonify({"error": "Game not found"}), 404
+
+    if game in game_list.games:
+        return jsonify({"error": "Game already in list"}), 409
+
+    game_list.games.append(game)
+    db.session.commit()
+
+    return jsonify({"message": f"Added {game.name} to {game_list.name}"}), 200
+
+
+@routes.route("/api/lists/<int:list_id>/games/<int:game_id>", methods=["DELETE"])
+@login_required
+def api_remove_game_from_list(list_id, game_id):
+    """Remove a game from a list (login required, must own the list)."""
+    game_list = db.session.get(GameList, list_id)
+    if game_list is None:
+        return jsonify({"error": "List not found"}), 404
+
+    if game_list.user_id != session["user_id"]:
+        return jsonify({"error": "You do not own this list"}), 403
+
+    game = db.session.get(Game, game_id)
+    if game is None:
+        return jsonify({"error": "Game not found"}), 404
+
+    if game not in game_list.games:
+        return jsonify({"error": "Game not in list"}), 404
+
+    game_list.games.remove(game)
+    db.session.commit()
+
+    return jsonify({"message": f"Removed {game.name} from {game_list.name}"}), 200

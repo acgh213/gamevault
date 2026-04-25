@@ -121,44 +121,6 @@
 </div>
 
 {% if session.get('user_id') %}
-<script>
-document.getElementById('reviewForm')?.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const feedback = document.getElementById('reviewFeedback');
-    const submitBtn = this.querySelector('button[type="submit"]');
-    const rating = this.querySelector('input[name="rating"]:checked')?.value;
-    const body = document.getElementById('reviewBody')?.value || '';
-    const igdbId = this.dataset.igdbId;
-
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Submitting...';
-    feedback.className = 'review-feedback';
-
-    try {
-        const response = await fetch('{{ url_for("routes.api_create_review") }}', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ igdb_id: parseInt(igdbId), rating: parseInt(rating), body: body }),
-        });
-        const data = await response.json();
-
-        if (response.ok) {
-            feedback.className = 'review-feedback success';
-            feedback.textContent = 'Review submitted! Refreshing...';
-            setTimeout(() => location.reload(), 1000);
-        } else {
-            feedback.className = 'review-feedback error';
-            feedback.textContent = data.error || 'Failed to submit review.';
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Submit Review';
-        }
-    } catch (err) {
-        feedback.className = 'review-feedback error';
-        feedback.textContent = 'Network error. Please try again.';
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Submit Review';
-    }
-});
-</script>
+<script src="{{ url_for('static', filename='js/review.js') }}"></script>
 {% endif %}
 {% endblock %}

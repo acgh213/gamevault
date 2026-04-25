@@ -8,19 +8,21 @@
         </div>
         <div class="profile-info">
             <h1 class="profile-username">{{ profile_user.username }}</h1>
-            <p class="profile-joined">Joined {{ profile_user.created_at.strftime('%B %Y') if profile_user.created_at else 'N/A' }}</p>
+            <p class="profile-joined">Member since {{ profile_user.created_at.strftime('%B %Y') if profile_user.created_at else 'N/A' }}</p>
         </div>
         <div class="profile-stats">
             <div class="stat-item">
-                <span class="stat-value">{{ total_reviews }}</span>
+                <span class="stat-num stat-value">{{ total_reviews }}</span>
                 <span class="stat-label">Reviews</span>
             </div>
-            {% if avg_rating %}
             <div class="stat-item">
-                <span class="stat-value">{{ avg_rating }}</span>
+                <span class="stat-num stat-value">{{ avg_rating if avg_rating else '—' }}</span>
                 <span class="stat-label">Avg Rating</span>
             </div>
-            {% endif %}
+            <div class="stat-item">
+                <span class="stat-num stat-value">{{ game_count }}</span>
+                <span class="stat-label">Games</span>
+            </div>
         </div>
     </div>
 
@@ -58,7 +60,41 @@
         </div>
         {% else %}
         <div class="empty-state">
-            <p>No reviews yet.</p>
+            <div class="empty-icon">&#128221;</div>
+            <h3>No reviews yet</h3>
+            <p>This user hasn't written any reviews yet.</p>
+        </div>
+        {% endif %}
+    </section>
+
+    <section class="profile-lists">
+        <div class="section-header">
+            <h2 class="section-title">Lists</h2>
+        </div>
+
+        {% if game_lists %}
+        <div class="lists-grid">
+            {% for glist in game_lists %}
+            <div class="list-card card">
+                <div class="list-card-header">
+                    <span class="list-icon">&#128193;</span>
+                    <h3 class="list-name">{{ glist.name }}</h3>
+                </div>
+                {% if glist.description %}
+                <p class="list-description">{{ glist.description[:150] }}{% if glist.description|length > 150 %}...{% endif %}</p>
+                {% endif %}
+                <div class="list-meta">
+                    <span class="list-game-count">{{ glist.games|length }} game{% if glist.games|length != 1 %}s{% endif %}</span>
+                    <span class="list-visibility">{{ 'Public' if glist.is_public else 'Private' }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">&#128196;</div>
+            <h3>No lists yet</h3>
+            <p>This user hasn't created any game lists yet.</p>
         </div>
         {% endif %}
     </section>

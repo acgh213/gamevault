@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}GameVault — My Lists{% endblock %}
+{% block content %}
+<div class="lists-page">
+    <div class="section-header">
+        <h1 class="section-title">My Game Lists</h1>
+        <button class="btn btn-primary" id="createListBtn">+ New List</button>
+    </div>
+
+    <!-- Create List Modal -->
+    <div class="modal-overlay" id="createListModal" style="display:none;">
+        <div class="modal card">
+            <div class="modal-header">
+                <h2 class="modal-title">Create New List</h2>
+                <button class="modal-close" id="closeModalBtn">&times;</button>
+            </div>
+            <form id="createListForm" class="modal-form">
+                <div class="form-group">
+                    <label for="listName" class="form-label">List Name</label>
+                    <input type="text" id="listName" name="name" class="form-input" placeholder="e.g. Favorites, To Play, Completed" required>
+                </div>
+                <div class="form-group">
+                    <label for="listDescription" class="form-label">Description <span class="optional">(optional)</span></label>
+                    <textarea id="listDescription" name="description" class="form-input form-textarea" placeholder="What's this list about?" rows="3"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelModalBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create List</button>
+                </div>
+            </form>
+            <div id="listFeedback" class="review-feedback"></div>
+        </div>
+    </div>
+
+    {% if lists %}
+    <div class="lists-container">
+        {% for game_list in lists %}
+        <div class="list-card card" data-list-id="{{ game_list.id }}">
+            <div class="list-card-header">
+                <h2 class="list-card-name">{{ game_list.name }}</h2>
+                <span class="list-card-count">{{ game_list.games|length }} game{% if game_list.games|length != 1 %}s{% endif %}</span>
+            </div>
+            {% if game_list.description %}
+            <p class="list-card-description">{{ game_list.description }}</p>
+            {% endif %}
+            <div class="list-card-games">
+                {% if game_list.games %}
+                    {% for game in game_list.games[:8] %}
+                    <a href="{{ url_for('routes.game_detail', igdb_id=game.igdb_id) }}" class="list-game-thumb" title="{{ game.name }}">
+                        {% if game.cover_url %}
+                        <img src="{{ game.cover_url }}" alt="{{ game.name }}" loading="lazy">
+                        {% else %}
+                        <div class="list-game-thumb-placeholder">
+                            <span class="no-cover-icon">&#127918;</span>
+                        </div>
+                        {% endif %}
+                    </a>
+                    {% endfor %}
+                    {% if game_list.games|length > 8 %}
+                    <div class="list-game-more">+{{ game_list.games|length - 8 }} more</div>
+                    {% endif %}
+                {% else %}
+                <div class="list-empty">No games yet. Add some from a game page!</div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state card">
+        <div class="empty-state-icon">&#128193;</div>
+        <h3 class="empty-state-title">No Lists Yet</h3>
+        <p class="empty-state-text">Create your first list to start organizing your games!</p>
+        <button class="btn btn-primary" id="emptyCreateBtn">Create List</button>
+    </div>
+    {% endif %}
+</div>
+
+<script src="{{ url_for('static', filename='js/lists.js') }}"></script>
+{% endblock %}
