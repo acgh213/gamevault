@@ -11,10 +11,17 @@ db = SQLAlchemy()
 
 log = logging.getLogger("gamevault")
 
+# Absolute DB path — never relative, never fragile
+DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "instance", "gamevault.db")
+
 
 def create_app(config_class="config.Config"):
     app = Flask(__name__)
     app.config.from_object(config_class)
+
+    # Force absolute DB path
+    app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{DB_PATH}"
+
     db.init_app(app)
 
     logging.basicConfig(
