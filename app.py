@@ -21,6 +21,12 @@ def create_app(config_class="config.Config"):
         format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     )
 
+    # Create tables on startup
+    with app.app_context():
+        import models  # noqa: F401 — registers User, Game, Review, GameList
+        db.create_all()
+        log.info("Database tables verified")
+
     # Register routes
     from routes import routes
     app.register_blueprint(routes)
